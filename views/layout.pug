@@ -1,0 +1,39 @@
+doctype html
+html(lang='en')
+  head
+    title= title
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='/stylesheets/bootstrap.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')    
+    script(src='/js/jquery.min.js')
+    script(src='/js/bootstrap.js')
+  body
+    div(class='container-fluid')
+      div(class='row')
+        div(class='col-sm-2')
+          block sidebar
+            ul(class='sidebar-nav')
+              li
+                a(href='/catalog') 主页
+              li
+                a(href='/catalog/books') 全部图书
+              li
+                a(href='/catalog/authors') 全部作者
+              li
+                a(href='/catalog/genres') 全部种类
+              li
+                a(href='/catalog/bookinstances') 所有书籍实例
+              li
+                hr
+              li
+                a(href='/catalog/author/create') Create new author
+              li
+                a(href='/catalog/genre/create') Create new genre
+              li
+                a(href='/catalog/book/create') Create new book
+              li
+                a(href='/catalog/bookinstance/create') Create new book instance (copy)
+
+        div(class='col-sm-10')
+          block content

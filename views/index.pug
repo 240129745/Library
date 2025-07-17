@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1= title
+  p 欢迎来到#[strong LocalLibrary]，这是一个非常基础的Express网站，作为Mozilla开发者网络上的教程示例而开发。
+
+  h1 动态内容
+
+  p 图书馆现存记录数量统计：
+
+  ul
+    li #[strong Books:] !{book_count}
+    li #[strong Copies:] !{book_instance_count}
+    li #[strong Copies available:] !{book_instance_available_count}
+    li #[strong 作者:] !{author_count}
+    li #[strong 流派(Genres):] !{genre_count}
