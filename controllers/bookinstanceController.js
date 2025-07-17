@@ -86,7 +86,8 @@ exports.bookinstance_create_post = [
     } else {
       // Data from form is valid.
       try {
-        bookinstance.save(); res.redirect(bookinstance.url);
+       await bookinstance.save();
+		res.redirect(bookinstance.url);
       } catch (error) {
         return next(error);
       }
