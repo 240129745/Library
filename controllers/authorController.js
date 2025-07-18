@@ -69,18 +69,14 @@ exports.author_create_post = [
         min: 1
     })
     .escape()
-    .withMessage("First name must be specified.")
-    .isAlphanumeric()
-    .withMessage("First name has non-alphanumeric characters."),
+    .withMessage("First name must be specified."),
     body("family_name")
     .trim()
     .isLength({
         min: 1
     })
     .escape()
-    .withMessage("Family name must be specified.")
-    .isAlphanumeric()
-    .withMessage("Family name has non-alphanumeric characters."),
+    .withMessage("Family name must be specified."),
     body("date_of_birth", "Invalid date of birth")
     .optional({
         values: "falsy"
@@ -143,7 +139,7 @@ exports.author_delete_get = asyncHandler(async(req, res, next) => {
         res.redirect("/catalog/authors");
     }
     res.render("author_delete", {
-        title: "Delete Author",
+        title: "删除作者",
         author: author,
         author_books: authors_books,
     });
@@ -151,34 +147,39 @@ exports.author_delete_get = asyncHandler(async(req, res, next) => {
 
 // 由 POST 处理作者删除操作
 exports.author_delete_post = asyncHandler(async(req, res, next) => {
-	try{
-   // res.send("未实现：删除作者的 POST,但已收到你传过来的id:" + req.params.id);
-	let author =await Author.findById(req.body.authorid);
-	if(!author){res.send("没找到这位作者！");}
-	let books = await Book.find({author:req.body.authorid});
-	if(books.length>0){
-		//这个作者还有书籍在引用，所以不能简单地直接删除，先显示他的书
-		res.render("author_delete",{
-			title: "Delete Author",
-			author: author,
-			author_books: books,
-		});
-		return ;
-	}else{
-	
-		let result = await Author.findOneAndDelete({_id:req.body.authorid});
-		if(result)
-		{
-			res.redirect("/catalog/authors");
-		}else{
-			res.send("删除失败");
-		}
-		
-	 }
-	}catch(err){
-		res.send("操作失败，可能是网络中断了。",err.message);
-	}
-	
+    try {
+        // res.send("未实现：删除作者的 POST,但已收到你传过来的id:" + req.params.id);
+        let author = await Author.findById(req.body.authorid);
+        if (!author) {
+            res.send("没找到这位作者！");
+        }
+        let books = await Book.find({
+            author: req.body.authorid
+        });
+        if (books.length > 0) {
+            //这个作者还有书籍在引用，所以不能简单地直接删除，先显示他的书
+            res.render("author_delete", {
+                title: "Delete Author",
+                author: author,
+                author_books: books,
+            });
+            return;
+        } else {
+
+            let result = await Author.findOneAndDelete({
+                _id: req.body.authorid
+            });
+            if (result) {
+                res.redirect("/catalog/authors");
+            } else {
+                res.send("删除失败");
+            }
+
+        }
+    } catch (err) {
+        res.send("操作失败，可能是网络中断了。", err.message);
+    }
+
 });
 
 // 由 GET 显示更新作者的表单

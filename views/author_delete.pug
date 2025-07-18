@@ -6,7 +6,7 @@ block content
 
   if author_books.length
 
-    p #[strong Delete the following books before attempting to delete this author.]
+    p #[strong 删除作者之前，要先删除该作者的所有作品。]
 
     div(style='margin-left:20px;margin-top:20px')
 
@@ -19,10 +19,10 @@ block content
         dd #{book.summary}
 
   else
-    p Do you really want to delete this Author?
+    p 你是否真的要删除该作者?
 
     form(method='POST' action='')
       div.form-group
         input#authorid.form-control(type='hidden',name='authorid', required='true', value=author._id )
 
-      button.btn.btn-primary(type='submit') Delete
+      button.btn.btn-primary(type='submit') 删除
