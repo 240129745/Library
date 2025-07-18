@@ -16,9 +16,17 @@ AuthorSchema.virtual("name").get(function () {
 
 // 虚拟属性'lifespan'：作者寿命
 AuthorSchema.virtual("lifespan").get(function () {
-  return (
-    this.date_of_death.getYear() - this.date_of_birth.getYear()
-  ).toString();
+
+  //有日期才可以判断寿命
+  if (this.date_of_death && this.date_of_birth) {
+    let life = (
+      this.date_of_death.getYear() - this.date_of_birth.getYear()
+    ).toString();
+    return "享年"+life+"岁";
+  } else {
+    //出生死亡日期不全，返回指定文本
+    return "享年不详";
+  }
 });
 
 // 虚拟属性'url'：作者 URL
@@ -27,10 +35,10 @@ AuthorSchema.virtual("url").get(function () {
 });
 AuthorSchema.virtual("date_of_birth_formatted").get(function () {
   let date = DateTime.fromJSDate(this.date_of_birth);
-  return date.isValid?date.toLocaleString(DateTime.DATE_MED):"?";
+  return date.isValid ? date.toLocaleString(DateTime.DATE_MED) : "?";
 });
 AuthorSchema.virtual("date_of_death_formatted").get(function () {
-    let date = DateTime.fromJSDate(this.date_of_death);
+  let date = DateTime.fromJSDate(this.date_of_death);
   if (!date.isValid) {
     return "?";
   }
