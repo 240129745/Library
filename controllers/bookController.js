@@ -85,7 +85,7 @@ exports.book_create_get = async function (req, res, next) {
         const authors = await Author.find({});
         const genres = await Genre.find({});
         res.render("book_form", {
-            title: "Create Book",
+            title: "创建图书",
             authors,
             genres
         });
@@ -164,7 +164,7 @@ exports.book_create_post = [
                     }
                 }
                 res.render("book_form", {
-                    title: "Create Book",
+                    title: "新建图书",
                     authors: results.authors,
                     genres: results.genres,
                     book: book,
@@ -295,7 +295,7 @@ exports.book_update_post = [
                     }
                 }
                 res.render("book_form", {
-                    title: "Update Book",
+                    title: "更新图书",
                     authors: results.authors,
                     genres: results.genres,
                     book: book,

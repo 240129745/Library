@@ -5,17 +5,17 @@ block content
 
   form(method='POST')
     div.form-group
-      label(for='first_name') First Name:
+      label(for='first_name') 姓氏(First Name):
       input#first_name.form-control(type='text', placeholder='First name (Christian)' name='first_name' required value=(undefined===author ? '' : author.first_name) )
-      label(for='family_name') Family Name:
+      label(for='family_name') 名(Family Name):
       input#family_name.form-control(type='text', placeholder='Family name (Surname)' name='family_name' required value=(undefined===author ? '' : author.family_name))
     div.form-group
-      label(for='date_of_birth') Date of birth:
+      label(for='date_of_birth') 出生日期:
       input#date_of_birth.form-control(type='date' name='date_of_birth' value=(undefined===author ? '' : author.date_of_birth) )
-      label(for='date_of_death') Date of death:
+      label(for='date_of_death') 逝世日期:
       input#date_of_death.form-control(type='date' name='date_of_death' value=(undefined===author ? '' : author.date_of_death) )
 
-    button.btn.btn-primary(type='submit') Submit
+    button.btn.btn-primary(type='submit') 提交
 
   if errors
     ul
