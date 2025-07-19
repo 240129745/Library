@@ -183,41 +183,82 @@ exports.author_delete_post = asyncHandler(async (req, res, next) => {
 });
 
 // 由 GET 显示更新作者的表单
-// exports.author_update_get = asyncHandler(async (req, res, next) => {
-//     // res.send("未实现：更新作者的 GET");
-//     var author = await Author.findById(req.params.id).exec();
-
-
-//     var plainAuthor = author.toObject();//将mongoose对象转换为普通对象,不然不好写入
-//     if (plainAuthor.date_of_birth instanceof Date && !isNaN(plainAuthor.date_of_birth)) {
-//         plainAuthor.date_of_birth = plainAuthor.date_of_birth.toISOString().split('T')[0];//.toISOString().split('T')[0]取得YYYY-MM-DD格式才能正确显示
-
-//     }
-//     if (plainAuthor.date_of_death instanceof Date && !isNaN(plainAuthor.date_of_death)) {
-//         plainAuthor.date_of_death = plainAuthor.date_of_death.toISOString().split('T')[0];//.toISOString().split('T')[0]取得YYYY-MM-DD格式才能正确显示
-
-//     }
-//     res.render("author_form", {
-//         title: "更新作者",
-//         author
-//     });
-// });
-
-// Display Author update form on GET.
 exports.author_update_get = asyncHandler(async (req, res, next) => {
-  const author = await Author.findById(req.params.id).exec();
-  if (author === null) {
-    // No results.
-    const err = new Error("Author not found");
-    err.status = 404;
-    return next(err);
-  }
-
-  res.render("author_form", { title: "Update Author", author });
+    const author = await Author.findById(req.params.id);
+    if (author === null) {
+        // No results.
+        const err = new Error("Author not found");
+        err.status = 404;
+        return next(err);
+    }
+    res.render("author_form", { title: "更新作者", author });
 });
 
 
 // 由 POST 处理作者更新操作
-exports.author_update_post = asyncHandler(async (req, res, next) => {
-    res.send("未实现：更新作者的 POST");
-});
+exports.author_update_post = [
+    // 验证并且清理字段
+    body("first_name")
+        .trim()
+        .isLength({
+            min: 1
+        })
+        .escape()
+        .withMessage("First name must be specified."),
+    body("family_name")
+        .trim()
+        .isLength({
+            min: 1
+        })
+        .escape()
+        .withMessage("Family name must be specified."),
+    body("date_of_birth", "Invalid date of birth")
+        .optional({
+            values: "falsy"
+        })
+        .isISO8601()
+        .toDate(),
+    body("date_of_death", "Invalid date of death")
+        .optional({
+            values: "falsy"
+        })
+        .isISO8601()
+        .toDate(),
+    body("date_of_death", "Invalid date of death")
+        .optional({
+            values: "falsy"
+        })
+        .isISO8601()
+        .toDate(),
+
+    // 在验证和修整完字段后处理请求
+    asyncHandler(async (req, res, next) => {
+        // 从请求中提取验证错误
+        const errors = validationResult(req);
+
+        // 使用经转义和去除空白字符处理的数据创建作者对象
+        const author = new Author({
+            first_name: req.body.first_name,
+            family_name: req.body.family_name,
+            date_of_birth: req.body.date_of_birth,
+            date_of_death: req.body.date_of_death,
+            _id: req.params.id
+        });
+
+        if (!errors.isEmpty()) {
+            // 出现错误。使用清理后的值/错误信息重新渲染表单
+            res.render("author_form", {
+                title: "更新作者",
+                author,
+                errors: errors.array(),
+            });
+            return;
+        } else {
+
+            // 更新作者信息
+            await Author.findByIdAndUpdate(req.params.id, author);
+            // 重定向到新的作者记录
+            res.redirect(author.url);
+        }
+    }),
+];
