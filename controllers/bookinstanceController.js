@@ -8,7 +8,7 @@ exports.bookinstance_list = asyncHandler(async (req, res, next) => {
   const allBookInstances = await BookInstance.find().populate("book").exec();
 
   res.render("bookinstance_list", {
-    title: "Book Instance List",
+    title: "馆藏图书列表",
     bookinstance_list: allBookInstances,
   });
 });
@@ -27,7 +27,7 @@ exports.bookinstance_detail = asyncHandler(async (req, res, next) => {
   }
 
   res.render("bookinstance_detail", {
-    title: "Book:",
+    title: "图书详情:",
     bookinstance: bookInstance,
   });
 });
@@ -36,7 +36,7 @@ exports.bookinstance_detail = asyncHandler(async (req, res, next) => {
 // Display BookInstance create form on GET.
 exports.bookinstance_create_get = asyncHandler(async (req, res, next) => {
   let result = await Book.find({}, "title").exec();
-  res.render("bookinstance_form", { title: "Create BookInstance", book_list: result });
+  res.render("bookinstance_form", { title: "新建藏本", book_list: result });
 });
 
 
@@ -73,7 +73,7 @@ exports.bookinstance_create_post = [
       try {
         let books = await Book.find({}, "title").exec();
         res.render("bookinstance_form", {
-          title: "Create BookInstance",
+          title: "新建藏本",
           book_list: books,
           selected_book: bookinstance.book._id,
           errors: errors.array(),

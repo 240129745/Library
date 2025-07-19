@@ -62,30 +62,30 @@ router.get("/author/:id", author_controller.author_detail);
 // 获取所有作者列表的 GET 请求。
 router.get("/authors", author_controller.author_list);
 
-/// 流派路由 ///
+/// 类别路由 ///
 
-// 用于创建流派的 GET 请求。注意：这必须在显示流派的路由之前（使用 id 的路由）。
+// 用于创建类别的 GET 请求。注意：这必须在显示类别的路由之前（使用 id 的路由）。
 router.get("/genre/create", genre_controller.genre_create_get);
 
 // POST 请求创建 Genre。
 router.post("/genre/create", genre_controller.genre_create_post);
 
-// 删除流派的 GET 请求。
+// 删除类别的 GET 请求。
 router.get("/genre/:id/delete", genre_controller.genre_delete_get);
 
 // POST 请求删除 Genre。
 router.post("/genre/:id/delete", genre_controller.genre_delete_post);
 
-// 更新流派的 GET 请求。
+// 更新类别的 GET 请求。
 router.get("/genre/:id/update", genre_controller.genre_update_get);
 
-// 更新流派的 POST 请求。
+// 更新类别的 POST 请求。
 router.post("/genre/:id/update", genre_controller.genre_update_post);
 
-// 获取一个流派的 GET 请求。
+// 获取一个类别的 GET 请求。
 router.get("/genre/:myid", genre_controller.genre_detail);
 
-// 获取所有流派列表的 GET 请求
+// 获取所有类别列表的 GET 请求
 router.get("/genres", genre_controller.genre_list);
 
 /// BOOKINSTANCE 路由 ///

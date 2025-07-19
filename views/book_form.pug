@@ -5,30 +5,30 @@ block content
 
   form(method='POST' action='')
     div.form-group
-      label(for='title') Title:
-      input#title.form-control(type='text', placeholder='Name of book' name='title' required='true' value=(undefined===book ? '' : book.title) )
+      label(for='title') 书名:
+      input#title.form-control(type='text', placeholder='请输入书名' name='title' required='true' value=(undefined===book ? '' : book.title) )
     div.form-group
-      label(for='author') Author:
-      select#author.form-control(type='select', placeholder='Select author' name='author' required='true' )
+      label(for='author') 作者:
+      select#author.form-control(type='select', placeholder='选择该书的作者' name='author' required='true' )
         for author in authors
           if book
-            option(value=author._id selected=(author._id.toString()==book.author ? 'selected' : false) ) #{author.name}
+            option(value=author._id selected=(author._id.toString()==book.author._id.toString() ? 'selected' : false) ) #{author.name}
           else
             option(value=author._id) #{author.name}
     div.form-group
-      label(for='summary') Summary:
-      input#summary.form-control(type='textarea', placeholder='Summary' name='summary' value=(undefined===book ? '' : book.summary) required='true')
+      label(for='summary') 摘要:
+      input#summary.form-control(type='textarea', placeholder='摘要' name='summary' value=(undefined===book ? '' : book.summary) required='true')
     div.form-group
       label(for='isbn') ISBN:
-      input#isbn.form-control(type='text', placeholder='ISBN13' name='isbn' value=(undefined===book ? '' : book.isbn) required='true')
+      input#isbn.form-control(type='text', placeholder='填入ISBN13' name='isbn' value=(undefined===book ? '' : book.isbn) required='true')
     div.form-group
-      label Genre:
+      label 类别:
       div
         for genre in genres
           div(style='display: inline; padding-right:10px;')
             input.checkbox-input(type='checkbox', name='genre', id=genre._id, value=genre._id, checked=genre.checked )
             label(for=genre._id) #{genre.name}
-    button.btn.btn-primary(type='submit') Submit
+    button.btn.btn-primary(type='submit') 提交
 
   if errors
     ul

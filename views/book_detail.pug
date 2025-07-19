@@ -1,39 +1,41 @@
 extends layout
 
 block content
-  h1 Title: #{book.title}
+  h1 书名: #{book.title}
 
-  p #[strong Author:]
+  p #[strong 作者:]
     a(href=book.author.url) #{book.author.name}
-  p #[strong Summary:] #{book.summary}
+  p #[strong 摘要:] #{book.summary}
   p #[strong ISBN:] #{book.isbn}
-  p #[strong Genre:]
+  p #[strong 类别:]
     each val, index in book.genre
       a(href=val.url) #{val.name}
       if index < book.genre.length - 1
         |,
 
   div(style='margin-left:20px;margin-top:20px')
-    h4 Copies
+    h4 藏本
 
     each val in book_instances
       hr
       if val.status=='Available'
-        p.text-success #{val.status}
+        p.text-success #{"可借阅"}
       else if val.status=='Maintenance'
-        p.text-danger #{val.status}
-      else
-        p.text-warning #{val.status}
-      p #[strong Imprint:] #{val.imprint}
+        p.text-danger #{"维护中"}
+      else if val.status=='Loaned'
+        p.text-warning #{"已借出"}
+      else if val.status == 'Reserved' 
+        p.text-warning #{"已预约"}
+      p #[strong 发行​:] #{val.imprint}
       if val.status!='Available'
-        p #[strong Due back:] #{val.due_back}
+        p #[strong 应还日期:] #{val.due_back_formatted}
       p #[strong Id:]
         a(href=val.url) #{val._id}
 
     else
-      p There are no copies of this book in the library.
+      p 本馆没有这本书的藏本。
   hr
   p
-    a(href=book.url+'/delete') Delete Book
+    a(href=book.url+'/delete') 删除图书
   p
-    a(href=book.url+'/update') Update Book
+    a(href=book.url+'/update') 更新图书
