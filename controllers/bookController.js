@@ -9,8 +9,9 @@ const {
 //const { body } = require("express-validator");
 
 const asyncHandler = require("express-async-handler");
+const book = require("../models/book");
 
-exports.index = asyncHandler(async(req, res, next) => {
+exports.index = asyncHandler(async (req, res, next) => {
     // 并行获取书的详细信息、书实例、作者和体裁的数量
     const [
         numBooks,
@@ -19,14 +20,14 @@ exports.index = asyncHandler(async(req, res, next) => {
         numAuthors,
         numGenres,
     ] = await Promise.all([
-                Book.countDocuments({}).exec(),
-                BookInstance.countDocuments({}).exec(),
-                BookInstance.countDocuments({
-                    status: "Available"
-                }).exec(),
-                Author.countDocuments({}).exec(),
-                Genre.countDocuments({}).exec(),
-            ]);
+        Book.countDocuments({}).exec(),
+        BookInstance.countDocuments({}).exec(),
+        BookInstance.countDocuments({
+            status: "Available"
+        }).exec(),
+        Author.countDocuments({}).exec(),
+        Genre.countDocuments({}).exec(),
+    ]);
 
     res.render("index", {
         title: "玉林图书馆",
@@ -40,7 +41,7 @@ exports.index = asyncHandler(async(req, res, next) => {
 });
 
 // 呈现数据库中所有书本的列表
-exports.book_list = asyncHandler(async(req, res, next) => {
+exports.book_list = asyncHandler(async (req, res, next) => {
     const allBooks = await Book.find({}, "title author")
         .sort({
             title: 1
@@ -55,14 +56,14 @@ exports.book_list = asyncHandler(async(req, res, next) => {
 });
 
 // 显示特定书籍的详细信息页面。
-exports.book_detail = asyncHandler(async(req, res, next) => {
+exports.book_detail = asyncHandler(async (req, res, next) => {
     // 获取书籍的详细信息，以及特定书籍的实例
     const [book, bookInstances] = await Promise.all([
-                Book.findById(req.params.id).populate("author").populate("genre").exec(),
-                BookInstance.find({
-                    book: req.params.id
-                }).exec(),
-            ]);
+        Book.findById(req.params.id).populate("author").populate("genre").exec(),
+        BookInstance.find({
+            book: req.params.id
+        }).exec(),
+    ]);
 
     if (book === null) {
         // 没有结果。
@@ -153,24 +154,24 @@ exports.book_create_post = [
                 },
             },
                 function (err, results) {
-                if (err) {
-                    return next(err);
-                }
-
-                // Mark our selected genres as checked.
-                for (let i = 0; i < results.genres.length; i++) {
-                    if (book.genre.indexOf(results.genres[i]._id) > -1) {
-                        results.genres[i].checked = "true";
+                    if (err) {
+                        return next(err);
                     }
-                }
-                res.render("book_form", {
-                    title: "新建图书",
-                    authors: results.authors,
-                    genres: results.genres,
-                    book: book,
-                    errors: errors.array(),
-                });
-            }, );
+
+                    // Mark our selected genres as checked.
+                    for (let i = 0; i < results.genres.length; i++) {
+                        if (book.genre.indexOf(results.genres[i]._id) > -1) {
+                            results.genres[i].checked = "true";
+                        }
+                    }
+                    res.render("book_form", {
+                        title: "新建图书",
+                        authors: results.authors,
+                        genres: results.genres,
+                        book: book,
+                        errors: errors.array(),
+                    });
+                },);
             return;
         } else {
             // Data from form is valid. Save book.
@@ -183,44 +184,60 @@ exports.book_create_post = [
 ];
 
 // 通过 GET 显示删除图书。
-exports.book_delete_get = asyncHandler(async(req, res, next) => {
-    res.send("未实现：删除 GET");
+exports.book_delete_get = asyncHandler(async (req, res, next) => {
+    let id = req.params.id;
+    let book = await Book.findById(id);
+    let bookInstances = await BookInstance.find({ book: id }).populate("book");
+
+    if (!book) {
+        res.send(`指定的${id}的书不存在`);
+    }
+    res.render("book_delete", {
+        title: "删除图书",
+        book: book,
+        bookInstances: bookInstances
+    });
 });
 
 // 以 POST 方式处理删除图书。
-exports.book_delete_post = asyncHandler(async(req, res, next) => {
-    res.send("未实现：删除 POST");
+exports.book_delete_post = asyncHandler(async (req, res, next) => {
+    let bookInstances = await BookInstance.find({ book: req.body.bookid }).populate("book");
+    if (bookInstances.length == 0) {
+        let result = await Book.findByIdAndDelete(req.body.bookid);
+        if (result) {
+            res.redirect("/catalog/books");
+        }else{
+            res.send("删除失败");
+        }
+    }
+
 });
 
 // 通过 GET 显示更新图书。
-exports.book_update_get = asyncHandler(async(req, res, next) => {
-    //res.send("未实现：更新图书 GET");
-    try {
-        let book = await Book.findById(req.params.id).populate("author").populate("genre");
-        let authors = await Author.find();
-        let genres = await Genre.find();
-        if (!book) {
-            res.send(`指定的${req.params.id}的书不存在`);
-        }
+exports.book_update_get = asyncHandler(async (req, res, next) => {
 
-        for (let i = 0; i < genres.length; i++) {
-            for (let j = 0; j < book.genre.length; j++) {
-                if (
-                    genres[i]._id.toString() == book.genre[j]._id.toString()) {
-                    genres[i].checked = "true";
-                }
+    let book = await Book.findById(req.params.id).populate("author").populate("genre");
+    let authors = await Author.find();
+    let genres = await Genre.find();
+    if (!book) {
+        res.send(`指定的${req.params.id}的书不存在`);
+    }
+
+    for (let i = 0; i < genres.length; i++) {
+        for (let j = 0; j < book.genre.length; j++) {
+            if (
+                genres[i]._id.toString() == book.genre[j]._id.toString()) {
+                genres[i].checked = "true";
             }
         }
-        res.render("book_form", {
-            title: "更新图书",
-            authors: authors,
-            genres: genres,
-            book: book,
-        });
-    } catch (err) {
-        console.error("出现错误了");
-        res.send("查找过程出错了，可能是网络中断。。。");
     }
+    res.render("book_form", {
+        title: "更新图书",
+        authors: authors,
+        genres: genres,
+        book: book,
+    });
+
 });
 
 // 处理 POST 时的更新图书。
@@ -284,24 +301,24 @@ exports.book_update_post = [
                 },
             },
                 function (err, results) {
-                if (err) {
-                    return next(err);
-                }
-
-                // Mark our selected genres as checked.
-                for (let i = 0; i < results.genres.length; i++) {
-                    if (book.genre.indexOf(results.genres[i]._id) > -1) {
-                        results.genres[i].checked = "true";
+                    if (err) {
+                        return next(err);
                     }
-                }
-                res.render("book_form", {
-                    title: "更新图书",
-                    authors: results.authors,
-                    genres: results.genres,
-                    book: book,
-                    errors: errors.array(),
-                });
-            }, );
+
+                    // Mark our selected genres as checked.
+                    for (let i = 0; i < results.genres.length; i++) {
+                        if (book.genre.indexOf(results.genres[i]._id) > -1) {
+                            results.genres[i].checked = "true";
+                        }
+                    }
+                    res.render("book_form", {
+                        title: "更新图书",
+                        authors: results.authors,
+                        genres: results.genres,
+                        book: book,
+                        errors: errors.array(),
+                    });
+                },);
 
             return;
         } else {
@@ -314,9 +331,9 @@ exports.book_update_post = [
                 }
                 res.redirect(thebook.url);
             })
-            .catch((err) => {
-                return next(err);
-            });
+                .catch((err) => {
+                    return next(err);
+                });
         }
     },
 

@@ -130,7 +130,6 @@ exports.author_create_post = [
 
 // 由 GET 显示删除作者的表单
 exports.author_delete_get = asyncHandler(async (req, res, next) => {
-    //res.send("未实现：删除作者的 Get,但已收到你传过来的id:" + req.params.id);
     let author = await Author.findById(req.params.id);
     let authors_books = await Book.find({
         author: req.params.id
@@ -148,7 +147,7 @@ exports.author_delete_get = asyncHandler(async (req, res, next) => {
 // 由 POST 处理作者删除操作
 exports.author_delete_post = asyncHandler(async (req, res, next) => {
     try {
-        // res.send("未实现：删除作者的 POST,但已收到你传过来的id:" + req.params.id);
+ 
         let author = await Author.findById(req.body.authorid);
         if (!author) {
             res.send("没找到这位作者！");

@@ -5,10 +5,10 @@ const { body, validationResult } = require("express-validator");
 var Book = require("../models/book");
 // 显示所有的 BookInstances
 exports.bookinstance_list = asyncHandler(async (req, res, next) => {
-  const allBookInstances = await BookInstance.find().populate("book").exec();
+  const allBookInstances = await BookInstance.find().populate("book");
 
   res.render("bookinstance_list", {
-    title: "馆藏图书列表",
+    title: "藏本列表",
     bookinstance_list: allBookInstances,
   });
 });
@@ -33,16 +33,13 @@ exports.bookinstance_detail = asyncHandler(async (req, res, next) => {
 });
 
 // 由 GET 显示创建 BookInstance 的表单
-// Display BookInstance create form on GET.
 exports.bookinstance_create_get = asyncHandler(async (req, res, next) => {
   let result = await Book.find({}, "title").exec();
   res.render("bookinstance_form", { title: "新建藏本", book_list: result });
 });
 
 
-
 // 由 POST 处理创建 BookInstance
-// Handle BookInstance create on POST.
 exports.bookinstance_create_post = [
   // Validate fields.
   body("book", "Book must be specified").isLength({ min: 1 }).trim(),
@@ -86,8 +83,8 @@ exports.bookinstance_create_post = [
     } else {
       // Data from form is valid.
       try {
-       await bookinstance.save();
-		res.redirect(bookinstance.url);
+        await bookinstance.save();
+        res.redirect(bookinstance.url);
       } catch (error) {
         return next(error);
       }
@@ -99,20 +96,79 @@ exports.bookinstance_create_post = [
 
 // 由 GET 显示删除 BookInstance 的表单
 exports.bookinstance_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("未实现：BookInstance 删除 GET");
+  let bookinstance = await BookInstance.findById(req.params.id).populate("book");
+  if (!bookinstance) {
+    // 没有结果。
+    res.redirect("/catalog/bookinstances");
+  }
+  res.render("bookinstance_delete", {
+    title: "删除藏本",
+    bookinstance: bookinstance,
+  });
 });
 
 // 由 POST 删除 BookInstance
 exports.bookinstance_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("未实现：BookInstance 删除 POST");
+  let result = await BookInstance.findByIdAndDelete(req.body.bookinstanceid);//删除成功就会返回被删除掉的文档
+  if (result) {
+    res.redirect("/catalog/bookinstances");
+  } else {
+    res.send("删除藏本失败");
+  }
+
 });
 
 // 由 GET 显示更新 BookInstance 的表单
 exports.bookinstance_update_get = asyncHandler(async (req, res, next) => {
-  res.send("未实现：BookInstance 更新 GET");
+  let bookinstance = await BookInstance.findById(req.params.id).populate("book");
+  let result = await Book.find({}, "title").exec();
+  res.render("bookinstance_form", { title: "更新藏本", bookinstance, book_list: result });
 });
 
 // 由 POST 处理更新 BookInstance
-exports.bookinstance_update_post = asyncHandler(async (req, res, next) => {
-  res.send("未实现：BookInstance 更新 POST");
-});
+exports.bookinstance_update_post = [
+  // Validate fields.
+  body("book", "Book must be specified").isLength({ min: 1 }).trim(),
+  body("imprint", "Imprint must be specified").isLength({ min: 1 }).trim(),
+  body("due_back", "Invalid date").optional({ checkFalsy: true }).isISO8601(),
+
+  // Sanitize fields.
+  body("book").trim().escape(),
+  body("imprint").trim().escape(),
+  body("status").trim().escape(),
+  body("due_back").toDate(),
+
+  // Process request after validation and sanitization.
+  async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create a BookInstance object with escaped and trimmed data.
+    var bookinstance = new BookInstance({
+      book: req.body.book,
+      imprint: req.body.imprint,
+      status: req.body.status,
+      due_back: req.body.due_back,
+      _id: req.params.id
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values and error messages.
+      try {
+        let books = await Book.find({}, "title").exec();
+        res.render("bookinstance_form", {
+          title: "更新藏本",
+          book_list: books,
+          selected_book: bookinstance.book._id,
+          errors: errors.array(),
+
+        });
+      } catch (error) {
+        return next(error);
+      }
+    } else {
+      await BookInstance.findByIdAndUpdate(req.params.id, bookinstance);
+      res.redirect(bookinstance.url);
+    }
+  },
+];

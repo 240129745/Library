@@ -2,7 +2,7 @@ extends layout
 
 block content
 
-  h1 图书ID: #{bookinstance._id}
+  h1 藏本ID: #{bookinstance._id}
 
   p #[strong 书名: ]
     a(href=bookinstance.book.url) #{bookinstance.book.title}
@@ -19,3 +19,8 @@ block content
       span.text-warning #{"已预约​​"}
   if bookinstance.status!='Available'
     p #[strong 应还日期:] #{bookinstance.due_back_formatted}
+
+  p
+    a(href=bookinstance.url+'/delete') 删除藏本
+  p
+    a(href=bookinstance.url+'/update') 更新藏本

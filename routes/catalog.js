@@ -103,7 +103,7 @@ router.post(
 );
 
 // 删除 BookInstance 的 GET 请求。
-router.post(
+router.get(
   "/bookinstance/:id/delete",
   book_instance_controller.bookinstance_delete_get,
 );
@@ -116,7 +116,7 @@ router.post(
 
 // 更新 BookInstance 的 GET 请求。
 router.get(
-  "/bookinstance/:id/delete",
+  "/bookinstance/:id/update",
   book_instance_controller.bookinstance_update_get,
 );
 
