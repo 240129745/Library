@@ -22,11 +22,13 @@ block content
 
     div.form-group
       label(for='status') 状态:
-      select#status.form-control(type='select' placeholder='选择状态' name='status' required='true')
-        option(value='Maintenance' selected=(bookinstance.status === 'Maintenance')) 维护中
-        option(value='Available' selected=(bookinstance.status === 'Available')) 可借阅
-        option(value='Loaned' selected=(bookinstance.status === 'Loaned')) 已借出
-        option(value='Reserved' selected=(bookinstance.status === 'Reserved')) ​​已预约
+      select#status.form-control(name='status' required)
+        - const status = (bookinstance&&bookinstance.status)?bookinstance.status:""
+        option(value='' selected disabled) 请选择一个状态      
+        option(value='Maintenance' selected=(status === 'Maintenance')) 维护中
+        option(value='Available' selected=(status === 'Available')) 可借阅
+        option(value='Loaned' selected=(status === 'Loaned')) 已借出
+        option(value='Reserved' selected=(status === 'Reserved')) ​​已预约
 
     button.btn.btn-primary(type='submit') 提交
 
