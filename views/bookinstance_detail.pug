@@ -19,7 +19,7 @@ block content
       span.text-warning #{"已预约​​"}
   if bookinstance.status!='Available'
     p #[strong 应还日期:] #{bookinstance.due_back_formatted}
-
+  <hr>
   p
     a(href=bookinstance.url+'/delete') 删除藏本
   p

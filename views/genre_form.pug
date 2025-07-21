@@ -7,7 +7,8 @@ block content
   form(method='POST')
     div.form-group
       label(for='name') 类别:
-      input#name.form-control(type='text', placeholder='图书类别' name='name' required value=(undefined===genre ? '' : genre.name) )
+      - var mygenre = genre || {}
+      input#name.form-control(type='text', placeholder='图书类别' name='name' required value=(undefined===genre ? '' : mygenre.name) )
     button.btn.btn-primary(type='submit') 提交
 
   if errors

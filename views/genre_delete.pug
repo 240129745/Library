@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  h1 #{title}: #{genre.name}
+  
+
+  if books.length
+
+    p #[strong 删除类别之前，要先删除该类别的所有的图书。]
+
+    div(style='margin-left:20px;margin-top:20px')
+
+      h4 图书
+
+      dl
+      each instance in books
+        dt
+          a(href=instance.url) #{instance.title}
+        dd #{instance.summary}
+
+  else
+    p 你是否真的要删除该类别?
+
+    form(method='POST' action='')
+      div.form-group
+        input#bookid.form-control(type='hidden',name='genreid', required='true', value=genre._id )
+
+      button.btn.btn-primary(type='submit') 删除
