@@ -30,7 +30,7 @@ exports.index = asyncHandler(async (req, res, next) => {
     ]);
 
     res.render("index", {
-        title: "玉林图书馆",
+        title: "岭南图书馆",
         book_count: numBooks,
         book_instance_count: numBookInstances,
         book_instance_available_count: numAvailableBookInstances,
